@@ -63,7 +63,7 @@ cmds.columnLayout()
 
 
 cmds.intSliderGrp('roundHeight',l="Height", f=True, min=1, max=20, value=1)
-cmds.intSliderGrp('roundWidth', l="Width (Bumps)", f=True, min=3, max=7, v=4)
+cmds.intSliderGrp('roundWidth', l="Width (Bumps)", f=True, min=1, max=7, v=4)
 cmds.colorSliderGrp('roundColour', l="Colour", hsv=(220,1,1))
 
 cmds.columnLayout()
@@ -166,7 +166,8 @@ def roundBlock():
         cmds.delete(ch=True)
 
     else:
-        cmds.select(nsTmp+':pCube1', r=True)
+        # cmds.select(nsTmp+':pCylinder1', r=True)
+        cmds.select(nsTmp+':'+nsTmp, r=True)
         cmds.rename(nsTmp)
         
     try:
