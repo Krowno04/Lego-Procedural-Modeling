@@ -62,7 +62,7 @@ def calculateBezier3D(iPointUV, uCount, vCount, uValue, vValue):
     mValue = vCount - 1
     cCoord = [0.0, 0.0, 0.0]
     cOneMinusU = 1.0 - uValue
-    cOneMinusV = 1.0 – vValue
+    cOneMinusV = 1.0 - vValue
 
     for i in range(0, uCount):
         for j in range(0, vCount):

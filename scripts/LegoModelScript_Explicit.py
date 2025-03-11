@@ -39,6 +39,21 @@ cmds.setParent( '..' )
 cmds.setParent( '..' )
 cmds.setParent( '..' )
 
+
+cmds.frameLayout(collapsable=True, label="Round Block", width=475, height=160)
+cmds.columnLayout() 
+
+
+cmds.intSliderGrp('roundHeight',l="Height", f=True, min=1, max=20, value=1)
+cmds.intSliderGrp('roundWidth', l="Width (Bumps)", f=True, min=1, max=7, v=4)
+cmds.colorSliderGrp('roundColour', l="Colour", hsv=(220,1,1))
+
+cmds.columnLayout()
+cmds.button(label="Create Round Block", command=('roundBlock()'))
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
 cmds.showWindow( MyWin )
 
 def slopedBlock():
@@ -96,6 +111,47 @@ def slopedBlock():
 
     cmds.namespace( removeNamespace=":"+nsTmp, mergeNamespaceWithParent = True)
 
+
+
+
+def roundBlock():
+    blockHeight = cmds.intSliderGrp('roundHeight', q=True, v=True)
+    blockWidth = cmds.intSliderGrp('roundWidth', q=True, v=True)
+    
+    rgb = cmds.colorSliderGrp('roundColour', q=True, rgbValue=True)
+    nsTmp = "Block" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    cubeSizeR = blockWidth * 0.8
+    cubeSizeY = blockHeight * 0.32
+    
+    cmds.polyCylinder(h=cubeSizeY, r=cubeSizeR/1.75)
+    
+    cmds.move((cubeSizeY/2.0), moveY=True)
+    for i in range(blockWidth):
+        for j in range(blockWidth):
+            if (i == 0 or i == blockWidth-1) and (j == 0 or j == blockWidth-1):                    
+                print("skipping this cylinder ", i, "+", j)
+            else:
+                cmds.polyCylinder(r=0.25, h=0.20)
+                cmds.move((cubeSizeY + 0.10), moveY=True, a=True)
+                cmds.move(((i * 0.8) - (cubeSizeR/2.0) + 0.4), moveX=True, a=True)
+                cmds.move(((j * 0.8) - (cubeSizeR/2.0) + 0.4), moveZ=True, a=True)
+
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], typ='double3')
+
+
+    if blockWidth > 2:
+        cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.delete(ch=True)
+
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+    
 
 def basicBlock():
     blockHeight = cmds.intSliderGrp('blockHeight', q=True, v=True)
