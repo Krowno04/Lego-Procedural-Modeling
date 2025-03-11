@@ -216,7 +216,7 @@ def roundBlock():
     cmds.move((cubeSizeY/2.0), moveY=True)
     for i in range(blockWidth):
         for j in range(blockWidth):
-            if (i == 0 or i == blockWidth-1) and (j == 0 or j == blockWidth-1):                    
+            if (blockWidth>2) and (i == 0 or i == blockWidth-1) and (j == 0 or j == blockWidth-1):                    
                 print("skipping this cylinder ", i, "+", j)
             else:
                 cmds.polyCylinder(r=0.25, h=0.20)
@@ -228,14 +228,16 @@ def roundBlock():
     cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], typ='double3')
 
 
-    if blockWidth > 2:
-        cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
-        cmds.delete(ch=True)
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.delete(ch=True)
+    # if blockWidth > 2:
+        # cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+        # cmds.delete(ch=True)
 
-    else:
+    # else:
         # cmds.select(nsTmp+':pCylinder1', r=True)
-        cmds.select(nsTmp+':'+nsTmp, r=True)
-        cmds.rename(nsTmp)
+        # cmds.select(nsTmp+':'+nsTmp, r=True)
+        # cmds.rename(nsTmp)
         
     try:
         cmds.hyperShade(assign=(nsTmp+":blckMat"))
