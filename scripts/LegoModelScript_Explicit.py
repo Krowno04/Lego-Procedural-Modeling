@@ -45,7 +45,7 @@ cmds.columnLayout()
 
 
 cmds.intSliderGrp('roundHeight',l="Height", f=True, min=1, max=20, value=1)
-cmds.intSliderGrp('roundWidth', l="Width (Bumps)", f=True, min=1, max=7, v=4)
+cmds.intSliderGrp('roundWidth', l="Width (Bumps)", f=True, min=3, max=7, v=4)
 cmds.colorSliderGrp('roundColour', l="Colour", hsv=(220,1,1))
 
 cmds.columnLayout()
@@ -128,7 +128,7 @@ def roundBlock():
     cubeSizeR = blockWidth * 0.8
     cubeSizeY = blockHeight * 0.32
     
-    cmds.polyCylinder(h=cubeSizeY, r=cubeSizeR/1.75)
+    cmds.polyCylinder(n=nsTmp, h=cubeSizeY, r=cubeSizeR/1.75)
     
     cmds.move((cubeSizeY/2.0), moveY=True)
     for i in range(blockWidth):
