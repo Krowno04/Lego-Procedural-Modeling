@@ -163,9 +163,17 @@ def roundBlock():
 
     if blockWidth > 2:
         cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
-    cmds.delete(ch=True)
+        cmds.delete(ch=True)
 
-    cmds.hyperShade(assign=(nsTmp+":blckMat"))
+    else:
+        cmds.select(nsTmp+':pCube1', r=True)
+        cmds.rename(nsTmp)
+        
+    try:
+        cmds.hyperShade(assign=(nsTmp+":blckMat"))
+    except:
+        pass
+
     cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
     
 
