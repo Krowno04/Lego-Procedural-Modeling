@@ -211,3 +211,39 @@ def lShapedBlock():
     cmds.hyperShade(assign=(nsTmp+":blckMat"))
     cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
 
+def basicBlock():
+    blockHeight = cmds.intSliderGrp('blockHeight', q=True, v=True)
+    blockWidth = cmds.intSliderGrp('blockWidth', q=True, v=True)
+    blockDepth = cmds.intSliderGrp('blockDepth', q=True, v=True)
+    
+    rgb = cmds.colorSliderGrp('blockColour', q=True, rgbValue=True)
+    nsTmp = "Block" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    cubeSizeX = blockWidth * 0.8
+    cubeSizeZ = blockDepth * 0.8
+    cubeSizeY = blockHeight * 0.32
+    
+    cmds.polyCube(h=cubeSizeY, w=cubeSizeX, d=cubeSizeZ)
+    
+    cmds.move((cubeSizeY/2.0), moveY=True)
+    for i in range(blockWidth):
+        for j in range(blockDepth):
+            cmds.polyCylinder(r=0.25, h=0.20)
+            cmds.move((cubeSizeY + 0.10), moveY=True, a=True)
+            cmds.move(((i * 0.8) - (cubeSizeX/2.0) + 0.4), moveX=True, a=True)
+            cmds.move(((j * 0.8) - (cubeSizeZ/2.0) + 0.4), moveZ=True, a=True)
+
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], typ='double3')
+
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.delete(ch=True)
+
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+
+    
