@@ -175,21 +175,30 @@ def smoothBlock():
 
     print(cubeSizeX, "\n", cubeSizeY, "\n", cubeSizeZ, "\n", rgb, "\n", nsTmp, "\n\n\n")
 
-    cmds.polyCylinder(r=0.01, h=0.01)
-    cmds.move((cubeSizeY - 0.1), moveY=True, a=True)
-    cmds.move(((0.1 * 0.8) - (cubeSizeX/2.0) + 0.4), moveX=True, a=True)
-    cmds.move(((0.1 * 0.8) - (cubeSizeZ/2.0) + 0.4), moveZ=True, a=True)
+    # This commented part is the temporary solution of moving a single, tiny stud so it can be united
+    # cmds.polyCylinder(r=0.01, h=0.01)
+    # cmds.move((cubeSizeY - 0.1), moveY=True, a=True)
+    # cmds.move(((0.1 * 0.8) - (cubeSizeX/2.0) + 0.4), moveX=True, a=True)
+    # cmds.move(((0.1 * 0.8) - (cubeSizeZ/2.0) + 0.4), moveZ=True, a=True)
+    
+
     
     myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
     cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], typ='double3')
 
     print(cubeSizeX, "\n", cubeSizeY, "\n", cubeSizeZ, "\n", rgb, "\n", nsTmp, "\n\n\n")
 
-    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
-    cmds.delete(ch=True)
-    
-    cmds.hyperShade(assign=(nsTmp+":blckMat"))
+    # The rename from Polyunite
+    # cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    # cmds.delete(ch=True)
+    cmds.select(nsTmp+':pCube1', r=True)
+    cmds.rename(nsTmp)
+    try:
+        cmds.hyperShade(assign=(nsTmp+":blckMat"))
+    except:
+        pass
     cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+    print('here')
 
 
     
