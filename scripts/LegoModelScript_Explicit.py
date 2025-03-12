@@ -4,14 +4,14 @@ MyWin = 'Lego Blocks'
 if cmds.window(MyWin, exists=True):
     cmds.deleteUI(MyWin, window=True)
 
-MyWin = cmds.window(MyWin, menuBar=True, widthHeight=(500,300))
+MyWin = cmds.window(MyWin, menuBar=True, widthHeight=(500,1200))
 
 cmds.menu(label="Basic Options")
 cmds.menuItem(label="New Scene", command=('cmds.file(new=True, force=True)'))
 cmds.menuItem(label="Delete Selected", command=('cmds.delete()'))
 
 
-cmds.frameLayout(collapsable=True, label="Standard Block", width=475, height=140)
+cmds.frameLayout(collapsable=True, label="Standard Block", width=475, height=180)
 
 cmds.columnLayout()
 cmds.intSliderGrp('blockHeight',l="Height", f=True, min=1, max=20, value=3)
@@ -27,7 +27,7 @@ cmds.setParent( '..' )
 
 cmds.setParent( '..' )
 
-cmds.frameLayout(collapsable=True, label="Smooth Block", width=475, height=140)
+cmds.frameLayout(collapsable=True, label="Smooth Block", width=475, height=180)
 
 cmds.columnLayout()
 cmds.intSliderGrp('smoothHeight',l="Height", f=True, min=1, max=20, value=1)
@@ -41,7 +41,19 @@ cmds.setParent( '..' )
 cmds.setParent( '..' )
 cmds.setParent( '..' )
 
-cmds.frameLayout(collapsable=True, label="L-Shaped Block", width=475, height=140)
+cmds.columnLayout()
+cmds.intSliderGrp('smoothHeight',l="Height", f=True, min=1, max=20, value=1)
+cmds.intSliderGrp('smoothWidth', l="Width (No Bumps)", f=True, min=1, max=20, value=2)
+cmds.intSliderGrp('smoothDepth', l="Depth (No Bumps)", f=True, min=1, max=20, value=8)
+
+cmds.colorSliderGrp('smoothColour', label="Colour", hsv=(360, 1, 1))
+cmds.columnLayout()
+cmds.button(label="Create Smooth Block", command=('smoothBlock()'))
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
+cmds.frameLayout(collapsable=True, label="L-Shaped Block", width=475, height=180)
 
 cmds.columnLayout()
 cmds.intSliderGrp('lBlockHeight',l="Height", f=True, min=1, max=20, value=3)
@@ -58,7 +70,7 @@ cmds.setParent( '..' )
 cmds.setParent( '..' )
 
 
-cmds.frameLayout(collapsable=True, label="Sloped Block", width=475, height=160)
+cmds.frameLayout(collapsable=True, label="Sloped Block", width=475, height=180)
 cmds.columnLayout() 
 
 cmds.intSliderGrp('slopedWidth', l="Width (Bumps)", f=True, min=1, max=20, v=4)
@@ -72,7 +84,7 @@ cmds.setParent( '..' )
 cmds.setParent( '..' )
 
 
-cmds.frameLayout(collapsable=True, label="Round Block", width=475, height=160)
+cmds.frameLayout(collapsable=True, label="Round Block", width=475, height=180)
 cmds.columnLayout() 
 
 
