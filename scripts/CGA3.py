@@ -43,6 +43,20 @@ cmds.setParent( '..' )
 cmds.setParent( '..' )
 
 
+cmds.frameLayout(collapsable=True, label="Beam Block", width=475, height=180)
+
+cmds.columnLayout()
+cmds.intSliderGrp('beamblockWidth',l="Width", f=True, min=2, max=20, value=2)
+
+cmds.colorSliderGrp('beamblockColour', label="Colour", hsv=(295.385, 1.000, 5.086))
+cmds.columnLayout()
+cmds.button(label="Create Beam Block", command=('beamBlock()'))
+cmds.setParent( '..' )
+
+cmds.setParent( '..' )
+
+cmds.setParent( '..' )
+
 
 cmds.frameLayout(collapsable=True, label="Smooth Block", width=475, height=180)
 
@@ -88,10 +102,8 @@ cmds.setParent( '..' )
 cmds.setParent( '..' )
 cmds.setParent( '..' )
 
-
 cmds.frameLayout(collapsable=True, label="Round Block", width=475, height=180)
 cmds.columnLayout() 
-
 
 cmds.intSliderGrp('roundHeight',l="Height", f=True, min=1, max=20, value=1)
 cmds.intSliderGrp('roundWidth', l="Width (Bumps)", f=True, min=1, max=7, v=4)
@@ -159,8 +171,7 @@ def slopedBlock():
         cmds.move(tV[0], tV[1], tV[2], a=True)
 
     cmds.namespace( removeNamespace=":"+nsTmp, mergeNamespaceWithParent = True)
-
-    
+  
 def smoothBlock():
     blockHeight = cmds.intSliderGrp('smoothHeight', q=True, v=True)
     blockWidth = cmds.intSliderGrp('smoothWidth', q=True, v=True)
@@ -212,8 +223,6 @@ def smoothBlock():
     cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
     print('here')
 
-
-
 def roundBlock():
     blockHeight = cmds.intSliderGrp('roundHeight', q=True, v=True)
     blockWidth = cmds.intSliderGrp('roundWidth', q=True, v=True)
@@ -261,7 +270,6 @@ def roundBlock():
 
     cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
     
-
 def lShapedBlock():
     blockHeight = cmds.intSliderGrp('lBlockHeight', q=True, v=True)
     blockWidth = cmds.intSliderGrp('lBlockWidth', q=True, v=True)
@@ -339,7 +347,6 @@ def basicBlock():
     cmds.hyperShade(assign=(nsTmp+":blckMat"))
     cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
 
-    
 def holeBlock():
     holeblockHeight = cmds.intSliderGrp('holeblockHeight', q=True, v=True)
     holeblockWidth = 1
@@ -393,7 +400,6 @@ def holeBlock():
     cmds.hyperShade(assign=(nsTmp+":blckMat"))
     cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
 
-
 def boolStud(cubeSizeY, cubeSizeX, cubeSizeZ, i, j):
         outerStud = cmds.polyCylinder(r=0.25, h=0.20)[0]
         cmds.move((cubeSizeY + 0.10), moveY=True, a=True)
@@ -422,3 +428,47 @@ def boolPierce(brick, nsTmp, holeblockDepth, cubeSizeY, cubeSizeZ, k):
     brickBool = cmds.polyUnite(bigCylinder1, bigCylinder2, n='brickBool2')[0]
 
     return brickBool
+
+def beamBlock():
+    beamblockWidth = cmds.intSliderGrp('beamblockWidth', q=True, v=True)
+    
+    rgb = cmds.colorSliderGrp('beamblockColour', q=True, rgbValue=True)
+    nsTmp = "Block" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    beamSizeW = beamblockWidth * 0.8
+    beamSizeH = 0.9
+    beamSizeR = 0.35
+    
+    cmds.polyCylinder(r=beamSizeR, h=beamSizeH)
+    cmds.move(beamSizeH/2, moveY=True, a=True)
+
+    cmds.polyCylinder(r=beamSizeR, h=beamSizeH)
+    cmds.move(0.8, moveZ=True, a=True)
+    cmds.move(beamSizeH/2, moveY=True, a=True)
+
+    cmds.polyCube(h=0.9, w=0.1, d=beamblockWidth/2.4)
+    cmds.move(beamSizeH/2, moveY=True, a=True)
+    cmds.move(beamSizeR-0.05, moveX=True, a=True)
+    cmds.move(beamSizeR+0.02, moveZ=True, a=True)
+
+    cmds.polyCube(h=0.9, w=0.1, d=beamblockWidth/2.4)
+    cmds.move(beamSizeH/2, moveY=True, a=True)
+    cmds.move(-beamSizeR+0.05, moveX=True, a=True)
+    cmds.move(beamSizeR+0.02, moveZ=True, a=True)
+
+    cmds.polyCube(h=0.1, w=0.5, d=0.5)
+    cmds.move(beamSizeH/2, moveY=True, a=True)
+    cmds.move(beamSizeR+0.02, moveZ=True, a=True)
+
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], typ='double3')
+
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.delete(ch=True)
+
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
