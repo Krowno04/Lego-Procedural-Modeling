@@ -366,28 +366,23 @@ def holeBlock():
 
     brickbool = brick
     k = 0
+    print(holeblockWidth)
+    print(holeblockDepth)
+    print(holeblockDepth-1)
+    print("\n\n")
     for i in range(holeblockDepth-1):
-        brickbool = boolPierce(brickbool, nsTmp, cubeSizeY, k)
-        k+1
+        print(i)
+        print("\n\n")
 
+        piercerCylinder = cmds.polyCylinder(r=0.25, h=2, sx=20, n='pierce')[0]
+        cmds.move(cubeSizeY/2, moveY=True, a=True)
+        cmds.move((-cubeSizeZ/2 + (i+1) * 0.8), moveZ=True, a=True)
+        cmds.rotate(90, rotateZ=True, a=True)
+        # brick = cmds.polyBoolOp(brick, piercerCylinder, op=2, ch=False)[0]
+        brick = cmds.polyBooleanCmd(brick, piercerCylinder, operation=2, ch=False)[0]
+        piercerCylinder2 = boolPierce(brickbool, nsTmp, holeblockDepth, cubeSizeY, cubeSizeZ, i)
+        brick = cmds.polyBooleanCmd(brick, piercerCylinder2, operation=2, ch=False)[0]
 
-    # piercerCylinder = cmds.polyCylinder(r=0.25, h=2, n='pierce')[0]
-    # cmds.move(cubeSizeY/2, moveY=True, a=True)
-    # #cmds.move(1, moveX=True, a=True)
-    # cmds.rotate(90, rotateZ=True, a=True)
-    # brickBool1 = cmds.polyBoolOp(brick, piercerCylinder, op=2, n=nsTmp)[0]
-
-    # bigCylinder1 = cmds.polyCylinder(r=0.3, h=1.35, n='pierce1')[0]
-    # cmds.move(cubeSizeY/2, moveY=True, a=True)
-    # cmds.move(1, moveX=True, a=True)
-    # cmds.rotate(90, rotateZ=True, a=True)
-    # brickBool2 = cmds.polyBoolOp(brickBool1, bigCylinder1, op=2, n=nsTmp)[0]
-
-    # bigCylinder2 = cmds.polyCylinder(r=0.3, h=1.35, n='pierce1')[0]
-    # cmds.move(cubeSizeY/2, moveY=True, a=True)
-    # cmds.move(-1, moveX=True, a=True)
-    # cmds.rotate(90, rotateZ=True, a=True)
-    # brickBool3 = cmds.polyBoolOp(brickBool2, bigCylinder2, op=2, n=nsTmp)[0]
             
     myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
     cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], typ='double3')
@@ -410,24 +405,20 @@ def boolStud(cubeSizeY, cubeSizeX, cubeSizeZ, i, j):
         cmds.move(((j * 0.8) - (cubeSizeZ/2.0) + 0.4), moveZ=True, a=True)
         cmds.polyBoolOp(outerStud, innerStud, op=2, n='stud' + str(rnd.randint(1000,9999)))[0]
     
-def boolPierce(brick, nsTmp, cubeSizeY, k):
-    piercerCylinder = cmds.polyCylinder(r=0.25, h=2, n='pierce')[0]
-    cmds.move(cubeSizeY/2, moveY=True, a=True)
-    cmds.move(1*k, moveZ=True, a=True)
-    cmds.rotate(90, rotateZ=True, a=True)
-    brickBool1 = cmds.polyBoolOp(brick, piercerCylinder, op=2, n=nsTmp)[0]
+def boolPierce(brick, nsTmp, holeblockDepth, cubeSizeY, cubeSizeZ, k):
+    print(k)
 
     bigCylinder1 = cmds.polyCylinder(r=0.3, h=1.35, n='pierce1')[0]
     cmds.move(cubeSizeY/2, moveY=True, a=True)
     cmds.move(1, moveX=True, a=True)
-    cmds.move(1*k, moveZ=True, a=True)
+    cmds.move((-cubeSizeZ/2 + (k+1) * 0.8), moveZ=True, a=True)
     cmds.rotate(90, rotateZ=True, a=True)
-    brickBool2 = cmds.polyBoolOp(brickBool1, bigCylinder1, op=2, n=nsTmp)[0]
 
-    bigCylinder2 = cmds.polyCylinder(r=0.3, h=1.35, n='pierce1')[0]
+    bigCylinder2 = cmds.polyCylinder(r=0.3, h=1.35, n='pierce2')[0]
     cmds.move(cubeSizeY/2, moveY=True, a=True)
     cmds.move(-1, moveX=True, a=True)
-    cmds.move(1*k, moveZ=True, a=True)
+    cmds.move((-cubeSizeZ/2 + (k+1) * 0.8), moveZ=True, a=True)
     cmds.rotate(90, rotateZ=True, a=True)
-    brickbool = cmds.polyBoolOp(brickBool2, bigCylinder2, op=2, n=nsTmp)[0]
-    return brickbool
+    brickBool = cmds.polyUnite(bigCylinder1, bigCylinder2, n='brickBool2')[0]
+
+    return brickBool
