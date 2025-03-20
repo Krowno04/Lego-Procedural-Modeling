@@ -365,30 +365,40 @@ def holeBlock():
     
     brick = cmds.polyCube(h=cubeSizeY, w=cubeSizeX, d=cubeSizeZ)[0]
 
-    
+    # This function runs a loop with the boolStud function to create all the studs with hole on the top.
+    # Everything is handled inside, so it just leaves you with a line of properly booled studs
     cmds.move((cubeSizeY/2.0), moveY=True)
     for i in range(holeblockWidth):
         for j in range(holeblockDepth):
             boolStud(cubeSizeY, cubeSizeX, cubeSizeZ, i, j)
 
     brickbool = brick
-    k = 0
-    print(holeblockWidth)
-    print(holeblockDepth)
-    print(holeblockDepth-1)
-    print("\n\n")
+    # Originally tried this from a function, but for some reason Maya doesn't like that very much
+    # So everything is now done here in the loop
+    # Create cylinder -> bool through brick -> create next cylinder -> bool -> repeat
     for i in range(holeblockDepth-1):
-        print(i)
-        print("\n\n")
 
-        piercerCylinder = cmds.polyCylinder(r=0.25, h=2, sx=20, n='pierce')[0]
+        piercerCylinder = cmds.polyCylinder(r=0.25, h=2, sx=12, n='pierce')[0]
         cmds.move(cubeSizeY/2, moveY=True, a=True)
         cmds.move((-cubeSizeZ/2 + (i+1) * 0.8), moveZ=True, a=True)
         cmds.rotate(90, rotateZ=True, a=True)
-        # brick = cmds.polyBoolOp(brick, piercerCylinder, op=2, ch=False)[0]
-        brick = cmds.polyBooleanCmd(brick, piercerCylinder, operation=2, ch=False)[0]
-        piercerCylinder2 = boolPierce(brickbool, nsTmp, holeblockDepth, cubeSizeY, cubeSizeZ, i)
-        brick = cmds.polyBooleanCmd(brick, piercerCylinder2, operation=2, ch=False)[0]
+        
+        brick = cmds.polyCBoolOp(brick, piercerCylinder, op=2, ch=False)[0]
+
+        bigCylinder1 = cmds.polyCylinder(r=0.3, h=1.35, sx=12, n='pierce1')[0]
+        cmds.move(cubeSizeY/2, moveY=True, a=True)
+        cmds.move(1, moveX=True, a=True)
+        cmds.move((-cubeSizeZ/2 + (i+1) * 0.8), moveZ=True, a=True)
+        cmds.rotate(90, rotateZ=True, a=True)
+        brick = cmds.polyBoolOp(brick, bigCylinder1, op=2, ch=False)[0]
+
+        bigCylinder2 = cmds.polyCylinder(r=0.3, h=1.35, sx=12, n='pierce2')[0]
+        cmds.move(cubeSizeY/2, moveY=True, a=True)
+        cmds.move(-1, moveX=True, a=True)
+        cmds.move((-cubeSizeZ/2 + (i+1) * 0.8), moveZ=True, a=True)
+        cmds.rotate(90, rotateZ=True, a=True)
+        
+        brick = cmds.polyBoolOp(brick, bigCylinder2, op=2, ch=False)[0]
 
             
     myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
@@ -400,6 +410,7 @@ def holeBlock():
     cmds.hyperShade(assign=(nsTmp+":blckMat"))
     cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
 
+# Used to create studs with holes in them
 def boolStud(cubeSizeY, cubeSizeX, cubeSizeZ, i, j):
         outerStud = cmds.polyCylinder(r=0.25, h=0.20)[0]
         cmds.move((cubeSizeY + 0.10), moveY=True, a=True)
@@ -410,24 +421,6 @@ def boolStud(cubeSizeY, cubeSizeX, cubeSizeZ, i, j):
         cmds.move(((i * 0.8) - (cubeSizeX/2.0) + 0.4), moveX=True, a=True)
         cmds.move(((j * 0.8) - (cubeSizeZ/2.0) + 0.4), moveZ=True, a=True)
         cmds.polyBoolOp(outerStud, innerStud, op=2, n='stud' + str(rnd.randint(1000,9999)))[0]
-    
-def boolPierce(brick, nsTmp, holeblockDepth, cubeSizeY, cubeSizeZ, k):
-    print(k)
-
-    bigCylinder1 = cmds.polyCylinder(r=0.3, h=1.35, n='pierce1')[0]
-    cmds.move(cubeSizeY/2, moveY=True, a=True)
-    cmds.move(1, moveX=True, a=True)
-    cmds.move((-cubeSizeZ/2 + (k+1) * 0.8), moveZ=True, a=True)
-    cmds.rotate(90, rotateZ=True, a=True)
-
-    bigCylinder2 = cmds.polyCylinder(r=0.3, h=1.35, n='pierce2')[0]
-    cmds.move(cubeSizeY/2, moveY=True, a=True)
-    cmds.move(-1, moveX=True, a=True)
-    cmds.move((-cubeSizeZ/2 + (k+1) * 0.8), moveZ=True, a=True)
-    cmds.rotate(90, rotateZ=True, a=True)
-    brickBool = cmds.polyUnite(bigCylinder1, bigCylinder2, n='brickBool2')[0]
-
-    return brickBool
 
 def beamBlock():
     beamblockWidth = cmds.intSliderGrp('beamblockWidth', q=True, v=True)
@@ -443,26 +436,49 @@ def beamBlock():
     beamSizeH = 0.9
     beamSizeR = 0.35
     
-    cmds.polyCylinder(r=beamSizeR, h=beamSizeH)
+    brick = cmds.polyCylinder(r=beamSizeR, h=beamSizeH, sx=12,)[0]
     cmds.move(beamSizeH/2, moveY=True, a=True)
 
-    cmds.polyCylinder(r=beamSizeR, h=beamSizeH)
-    cmds.move(0.8, moveZ=True, a=True)
-    cmds.move(beamSizeH/2, moveY=True, a=True)
+    cylinder = cmds.polyCylinder(r=beamSizeR*0.7, h=beamSizeH*1.5, sx=12)[0]
+    cmds.move(beamSizeH/2, moveY=True, a=True)    
+    brick = cmds.polyBoolOp(brick, cylinder, op=2, ch=False)[0]
 
-    cmds.polyCube(h=0.9, w=0.1, d=beamblockWidth/2.4)
-    cmds.move(beamSizeH/2, moveY=True, a=True)
-    cmds.move(beamSizeR-0.05, moveX=True, a=True)
-    cmds.move(beamSizeR+0.02, moveZ=True, a=True)
+    for i in range(beamblockWidth-1):
+        cylinder = cmds.polyCylinder(r=beamSizeR, h=beamSizeH, sx=12)[0]
+        cmds.move((i+1)*0.8, moveZ=True, a=True)
+        cmds.move(beamSizeH/2, moveY=True, a=True)
 
-    cmds.polyCube(h=0.9, w=0.1, d=beamblockWidth/2.4)
-    cmds.move(beamSizeH/2, moveY=True, a=True)
-    cmds.move(-beamSizeR+0.05, moveX=True, a=True)
-    cmds.move(beamSizeR+0.02, moveZ=True, a=True)
+        cylinder1 = cmds.polyCylinder(r=beamSizeR*0.7, h=beamSizeH*1.5, sx=12)[0]
+        cmds.move((i+1)*0.8, moveZ=True, a=True)
+        cmds.move(beamSizeH/2, moveY=True, a=True)    
+        cylinder = cmds.polyBoolOp(cylinder, cylinder1, op=2, ch=False)[0]
 
-    cmds.polyCube(h=0.1, w=0.5, d=0.5)
-    cmds.move(beamSizeH/2, moveY=True, a=True)
-    cmds.move(beamSizeR+0.02, moveZ=True, a=True)
+
+    for j in range(beamblockWidth-1):
+        cube1 = cmds.polyCube(h=0.9, w=0.1, d=1.95/2.4)[0]
+        cmds.move(beamSizeH/2, moveY=True, a=True)
+        cmds.move(beamSizeR-0.05, moveX=True, a=True)
+        cmds.move(((j+1)*0.8)-0.8+beamSizeR+0.02, moveZ=True, a=True)
+
+        cube2 = cmds.polyCube(h=0.9, w=0.1, d=1.95/2.4)[0]
+        cmds.move(beamSizeH/2, moveY=True, a=True)
+        cmds.move(-beamSizeR+0.05, moveX=True, a=True)
+        cmds.move(((j+1)*0.8)-0.8+beamSizeR+0.02, moveZ=True, a=True)
+
+        brickUnited = cmds.polyUnite(cube1, cube2, n='brickUnited')[0]
+
+        cube3 = cmds.polyCube(h=0.1, w=0.5, d=0.31)[0]
+        cmds.move(beamSizeH/2, moveY=True, a=True)
+        cmds.move(((j+1)*0.8)-0.8+beamSizeR+0.05, moveZ=True, a=True)
+
+        brickUnited = cmds.polyUnite(brickUnited, cube3, n='brickUnited')[0]
+
+        brick = cmds.polyUnite(brick, brickUnited, n=nsTmp, ch=False)[0]
+   
+    #Originally used this tiny cube to make sure the polyUnite worked.
+    #Just leaving this in 'cause it's funny
+    #Google "Coconut TF2" to see what this is a reference to lol
+    #coconut = cmds.polyCube(h=0.01, w=0.01, d=0.01)[0]
 
     myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
     cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], typ='double3')
